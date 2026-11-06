@@ -1,0 +1,138 @@
+
+{% extends "base.html" %}
+
+{% block title %}Budgets - MoneyMate{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Monthly Budgets</h2>
+            <p class="text-muted">Manage your monthly spending limits.</p>
+        </div>
+    </div>
+
+    <!-- Add Budget Form -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Set a Budget</h5>
+
+            <form method="POST" action="{{ url_for('budget') }}">
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Education">Education</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Health">Health</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Budget Amount (₹)</label>
+                        <input type="number" name="amount"
+                               class="form-control"
+                               min="1" step="0.01" required>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Save Budget
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget List -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <h5 class="mb-3">Your Budgets</h5>
+
+            {% if budgets %}
+
+                {% for budget in budgets %}
+
+                    {% set spent = budget.spent|default(0, true)|float %}
+                    {% set amount = budget.amount|float %}
+                    {% set percentage = (spent / amount * 100) if amount > 0 else 0 %}
+
+                    <div class="mb-4">
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>{{ budget.category }}</strong>
+                                <div class="text-muted small">
+                                    ₹{{ "%.2f"|format(spent) }} spent
+                                    of ₹{{ "%.2f"|format(amount) }}
+                                </div>
+                            </div>
+
+                            <strong>₹{{ "%.2f"|format(amount) }}</strong>
+                        </div>
+
+                        <div class="progress mt-3 mb-2">
+                            <div class="progress-bar budget-progress"
+                                 data-progress="{{ [percentage, 100]|min }}"
+                                 data-status="{% if percentage >= 100 %}danger{% elif percentage >= 80 %}warning{% else %}success{% endif %}">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">
+                                {{ "%.1f"|format(percentage) }}% used
+                            </small>
+
+                            {% if percentage >= 100 %}
+                                <small class="text-danger">Budget exceeded</small>
+                            {% elif percentage >= 80 %}
+                                <small class="text-warning">Almost reached</small>
+                            {% else %}
+                                <small class="text-success">Within budget</small>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    {% if not loop.last %}
+                        <hr>
+                    {% endif %}
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="text-center py-4">
+                    <p class="text-muted">You haven't created any budgets yet.</p>
+                </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll(".budget-progress").forEach(function(bar) {
+    const percentage = Number(bar.dataset.progress);
+    const status = bar.dataset.status;
+
+    bar.style.width = percentage + "%";
+    bar.classList.add("bg-" + status);
+});
+</script>
+
+{% endblock %}

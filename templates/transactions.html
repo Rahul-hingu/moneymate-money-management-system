@@ -1,0 +1,140 @@
+
+{% extends "base.html" %}
+
+{% block title %}Transactions | MoneyMate{% endblock %}
+
+{% block content %}
+
+<div class="topbar">
+    <div>
+        <h2 class="fw-bold">Transactions</h2>
+        <p class="muted">Manage your income and expenses.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+        <div class="card-box">
+
+            <h5 class="fw-bold mb-4">Add Transaction</h5>
+
+            <form method="POST" action="{{ url_for('transactions') }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control"
+                           placeholder="e.g. Grocery Shopping" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Amount (₹)</label>
+                    <input type="number" name="amount" class="form-control"
+                           placeholder="Enter amount" min="0.01"
+                           step="0.01" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select" required>
+                        <option value="">Select Category</option>
+                        <option>Food</option>
+                        <option>Shopping</option>
+                        <option>Travel</option>
+                        <option>Education</option>
+                        <option>Entertainment</option>
+                        <option>Healthcare</option>
+                        <option>Bills</option>
+                        <option>Salary</option>
+                        <option>Business</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Transaction Type</label>
+                    <select name="type" class="form-select" required>
+                        <option value="">Select Type</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Date</label>
+                    <input type="date" name="transaction_date"
+                           class="form-control"
+                           value="{{ today if today else '' }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">
+                    Save Transaction
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card-box">
+
+            <h5 class="fw-bold mb-4">Transaction History</h5>
+
+            <div class="table-responsive">
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for t in transactions %}
+                        <tr>
+                            <td>{{ t.title }}</td>
+                            <td>{{ t.category }}</td>
+                            <td>{{ t.transaction_date }}</td>
+
+                            <td class="{% if t.type == 'income' %}green{% else %}red{% endif %} fw-bold">
+                                {% if t.type == 'income' %}+{% else %}-{% endif %}
+                                ₹{{ "%.2f"|format(t.amount) }}
+                            </td>
+
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('delete_transaction', id=t.id) }}"
+                                      onsubmit="return confirm('Delete this transaction?');">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-secondary">
+                                No transactions found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

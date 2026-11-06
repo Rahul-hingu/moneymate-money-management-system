@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login | MoneyMate{% endblock %}
+
+{% block content %}
+
+<div class="auth-card">
+
+    <h2 class="text-success fw-bold text-center">MoneyMate.</h2>
+
+    <h4 class="text-center mt-4">Welcome Back!</h4>
+    <p class="text-center text-secondary">Login to manage your finances.</p>
+
+    <form method="POST" action="{{ url_for('login') }}">
+
+        <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control"
+                   placeholder="Enter your email" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control"
+                   placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 py-2">
+            Login
+        </button>
+
+    </form>
+
+    <p class="text-center mt-4 mb-0">
+        Don't have an account?
+        <a href="{{ url_for('register') }}" class="text-success">Register</a>
+    </p>
+
+</div>
+
+{% endblock %}

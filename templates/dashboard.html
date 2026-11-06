@@ -1,0 +1,222 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MoneyMate{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2>Dashboard</h2>
+        <p class="text-muted">Welcome to your personal finance dashboard!</p>
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Balance</p>
+                    <h3 class="text-primary">
+                        ₹{{ "%.2f"|format(balance|default(0)|float) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Income</p>
+                    <h3 class="text-success">
+                        ₹{{ "%.2f"|format(income|default(0)|float) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Expenses</p>
+                    <h3 class="text-danger">
+                        ₹{{ "%.2f"|format(expenses|default(0)|float) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Quick Actions</h5>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('transactions') }}"
+                   class="btn btn-primary">
+                    Add Transaction
+                </a>
+
+                <a href="{{ url_for('savings') }}"
+                   class="btn btn-success">
+                    Savings Goals
+                </a>
+
+                <a href="{{ url_for('budget') }}"
+                   class="btn btn-outline-primary">
+                    Manage Budgets
+                </a>
+
+                <a href="{{ url_for('reports') }}"
+                   class="btn btn-outline-secondary">
+                    View Reports
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Savings Goals -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <h5 class="mb-3">Your Savings Goals</h5>
+
+            {% if savings %}
+
+                {% for goal in savings %}
+
+                    {% set target = goal.target_amount|float %}
+                    {% set saved = goal.saved_amount|float %}
+                    {% set progress = (saved / target * 100) if target > 0 else 0 %}
+
+                    <div class="mb-4">
+
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ goal.goal_name }}</strong>
+
+                            <span class="text-muted">
+                                ₹{{ "%.2f"|format(saved) }}
+                                / ₹{{ "%.2f"|format(target) }}
+                            </span>
+                        </div>
+
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-success savings-progress"
+                                 data-progress="{{ [progress, 100]|min }}">
+                            </div>
+                        </div>
+
+                        <small class="text-muted">
+                            {{ "%.1f"|format(progress) }}% completed
+                        </small>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="text-muted">
+                    You haven't created any savings goals yet.
+                </p>
+
+                <a href="{{ url_for('savings') }}"
+                   class="btn btn-sm btn-success">
+                    Create Savings Goal
+                </a>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Recent Transactions</h5>
+
+                <a href="{{ url_for('transactions') }}"
+                   class="btn btn-sm btn-outline-primary">
+                    View All
+                </a>
+            </div>
+
+            {% if transactions %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for transaction in transactions %}
+
+                                <tr>
+                                    <td>{{ transaction.title }}</td>
+                                    <td>{{ transaction.category }}</td>
+                                    <td>{{ transaction.transaction_date }}</td>
+
+                                    <td>
+                                        {% if transaction.type == "income" %}
+                                            <span class="badge bg-success">Income</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Expense</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-end">
+                                        {% if transaction.type == "income" %}
+                                            <span class="text-success">
+                                                + ₹{{ "%.2f"|format(transaction.amount|float) }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-danger">
+                                                - ₹{{ "%.2f"|format(transaction.amount|float) }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            {% else %}
+
+                <p class="text-muted text-center py-3">
+                    No transactions available. Add your first transaction!
+                </p>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll(".savings-progress").forEach(function(bar) {
+    const progress = Number(bar.dataset.progress);
+    bar.style.width = progress + "%";
+});
+</script>
+
+{% endblock %}

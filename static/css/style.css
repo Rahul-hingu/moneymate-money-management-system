@@ -1,0 +1,70 @@
+body {font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    text-align: center;
+    padding-top: 100px;
+     
+}
+h1{
+    color : #222;
+
+}
+
+p {
+    color :#222;
+
+}
+.dashboard {
+    width: 90%;
+    max-width: 1000px;
+margin: auto;
+}
+.income-card {
+    background-color: aquamarine;
+    width: 250px;
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 12px;
+}
+.income-card h2 {
+    margin-bottom : 10px
+}
+.income-card p{
+    font-size: 28px;
+    font-weight: bold;
+}
+.expense-card {
+background-color: aquamarine;
+width:250px;
+margin :30px auto;
+padding :20px;
+border-radius :12px;
+}
+.expense-card h2{
+    margin-bottom :10px;
+
+}
+.expense-card p{
+    font-size : 28px;
+    font-weight: bold;
+}
+.balance-card {
+background-color: aquamarine;
+width:250px;
+margin :30px auto;
+padding :20px;
+border-radius :12px;
+}
+.balance-card h2{
+    margin-bottom :10px;
+
+}
+.balance-card p{
+    font-size : 28px;
+    font-weight: bold;
+}
+.summary-card {
+    display: flex;
+    justify-content: center;
+    gap: 20 Spx;
+    flex-wrap: wrap;
+}

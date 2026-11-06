@@ -1,0 +1,154 @@
+
+{% extends "base.html" %}
+
+{% block title %}Reports - MoneyMate{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2>Financial Reports</h2>
+        <p class="text-muted">
+            Visualise your income and expenses.
+        </p>
+    </div>
+
+    <!-- Monthly Income and Expense Chart -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <h5 class="mb-3">Monthly Income vs Expenses</h5>
+
+            <div style="height: 350px;">
+                <canvas id="monthlyChart"
+                    data-labels='{{ monthly_data|map(attribute="month")|list|tojson }}'
+                    data-income='{{ monthly_data|map(attribute="income")|list|tojson }}'
+                    data-expenses='{{ monthly_data|map(attribute="expenses")|list|tojson }}'>
+                </canvas>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Category Expense Chart -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <h5 class="mb-3">Expenses by Category</h5>
+
+            {% if category_data %}
+
+                <div style="height: 350px;">
+                    <canvas id="categoryChart"
+                        data-labels='{{ category_data|map(attribute="category")|list|tojson }}'
+                        data-values='{{ category_data|map(attribute="total")|list|tojson }}'>
+                    </canvas>
+                </div>
+
+            {% else %}
+
+                <p class="text-muted text-center py-4">
+                    No expense data available yet.
+                </p>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+// Monthly Income and Expense Chart
+
+const monthlyCanvas = document.getElementById("monthlyChart");
+
+if (monthlyCanvas) {
+
+    const monthlyLabels = JSON.parse(monthlyCanvas.dataset.labels);
+    const incomeValues = JSON.parse(monthlyCanvas.dataset.income);
+    const expenseValues = JSON.parse(monthlyCanvas.dataset.expenses);
+
+    new Chart(monthlyCanvas, {
+
+        type: "bar",
+
+        data: {
+            labels: monthlyLabels,
+
+            datasets: [
+                {
+                    label: "Income",
+                    data: incomeValues,
+                    backgroundColor: "rgba(25, 135, 84, 0.7)",
+                    borderColor: "rgb(25, 135, 84)",
+                    borderWidth: 1
+                },
+
+                {
+                    label: "Expenses",
+                    data: expenseValues,
+                    backgroundColor: "rgba(220, 53, 69, 0.7)",
+                    borderColor: "rgb(220, 53, 69)",
+                    borderWidth: 1
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+
+    });
+
+}
+
+
+// Expense Category Chart
+
+const categoryCanvas = document.getElementById("categoryChart");
+
+if (categoryCanvas) {
+
+    const categoryLabels = JSON.parse(categoryCanvas.dataset.labels);
+    const categoryValues = JSON.parse(categoryCanvas.dataset.values);
+
+    new Chart(categoryCanvas, {
+
+        type: "doughnut",
+
+        data: {
+            labels: categoryLabels,
+
+            datasets: [
+                {
+                    label: "Expenses",
+                    data: categoryValues,
+                    borderWidth: 1
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+
+    });
+
+}
+
+</script>
+
+{% endblock %}
